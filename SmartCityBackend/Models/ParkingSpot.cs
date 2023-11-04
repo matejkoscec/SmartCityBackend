@@ -9,4 +9,6 @@ public class ParkingSpot : AuditableEntity<Guid>
     public ParkingZone Zone { get; set; }
     
     public IEnumerable<ParkingSpotHistory> ParkingSpotsHistory { get; set; } = null!;
+    
+    public IEnumerable<ActiveReservation> ActiveReservations { get; set; } = null!;
 }

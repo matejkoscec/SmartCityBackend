@@ -13,6 +13,7 @@ public static class InitializeDatabase
         migrator.MigrateUp();
 
         InitializeRoles(app);
+        InitializeZonePrices(app);
 
         return app;
     }
@@ -38,5 +39,37 @@ public static class InitializeDatabase
         }
 
         context.SaveChanges();
+    }
+
+    private static void InitializeZonePrices(IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices.CreateScope();
+
+        var dbContext = scope.ServiceProvider.GetService<DatabaseContext>()!;
+
+        foreach (var zone in Enum.GetValuesAsUnderlyingType<ParkingZone>())
+        {
+            var parkingZone = (ParkingZone)zone;
+            var item = dbContext.ZonePrices.OrderByDescending(x => x.CreatedAtUtc)
+                .LastOrDefault(x => x.Zone == parkingZone);
+
+            if (item is null)
+            {
+                dbContext.Add(new ZonePrice
+                {
+                    Zone = parkingZone,
+                    Price = parkingZone switch
+                    {
+                        ParkingZone.Zone1 => 2m,
+                        ParkingZone.Zone2 => 1.5m,
+                        ParkingZone.Zone3 => 1.0m,
+                        ParkingZone.Zone4 => 0.5m,
+                        _ => throw new ArgumentOutOfRangeException()
+                    }
+                });
+            }
+        }
+
+        dbContext.SaveChanges();
     }
 }

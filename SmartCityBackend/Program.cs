@@ -5,6 +5,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
+using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
 using SmartCityBackend.Infrastructure.Jobs;
 using SmartCityBackend.Infrastructure.Middlewares;
@@ -40,6 +41,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 builder.Services.AddHttpClients(builder.Configuration);
 
+builder.Services.AddHostedService<EventHubListener>();
+
 builder.Services.AddQuartz(q =>
 {
     var jobKey = new JobKey("GetAllParkingSpotsJob");
@@ -48,7 +51,7 @@ builder.Services.AddQuartz(q =>
     q.AddTrigger(opts => opts
         .ForJob(jobKey)
         .WithIdentity("GetAllParkingSpots-trigger")
-        .WithCronSchedule("0 * * ? * *")
+        .WithCronSchedule("0 0/1 * * * ?")
     );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

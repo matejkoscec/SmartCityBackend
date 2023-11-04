@@ -24,7 +24,7 @@ public class GetAllParkingSpotsJob : IJob
     public async Task Execute(IJobExecutionContext context)
     {
         var allParkingSpots = await _simulationService.GetAllParkingSpots(context.CancellationToken);
-
+    
         var existingParkingSpots = await _dbContext.ParkingSpots.ToListAsync(context.CancellationToken);
         var existingMappedById = existingParkingSpots.GroupBy(x => x.Id)
             .ToDictionary(x => x.Key, x => x.First());
@@ -63,6 +63,7 @@ public class GetAllParkingSpotsJob : IJob
                 };
                 _dbContext.Add(newSpot);
                 _logger.LogInformation("Added new parking spot {Guid}", newSpot.Id);
+                updated++;
             }
         }
 
