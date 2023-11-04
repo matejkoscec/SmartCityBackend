@@ -3,11 +3,11 @@
 public record ParkingSpotDto(string? Id,
     double Latitude,
     double Longitude,
-    ParkingSpotZone ParkingSpotZone,
+    ParkingSpotZoneDto ParkingSpotZoneDto,
     bool Occupied,
     string OccupiedTimestamp);
 
-public enum ParkingSpotZone
+public enum ParkingSpotZoneDto
 {
     Zone1,
     Zone2,
