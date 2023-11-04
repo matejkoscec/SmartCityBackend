@@ -2,7 +2,7 @@
 using FluentValidation;
 using MediatR;
 
-namespace SmartCityBackend.Features.User;
+namespace SmartCityBackend.Features.Auth;
 
 public sealed record LoginRequest(string Email, string Password);
 

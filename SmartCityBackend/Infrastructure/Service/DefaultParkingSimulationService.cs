@@ -15,16 +15,15 @@ public class DefaultParkingSimulationService : IParkingSimulationService
         _httpClient = httpClient;
     }
 
-    public async Task Foo(CancellationToken cancellationToken)
+    public async Task<List<ParkingSpotDto>> GetAllParkingSpots(CancellationToken cancellationToken)
     {
         var result = await _httpClient.GetAsync("api/ParkingSpot/getAll", cancellationToken);
         result.EnsureSuccessStatusCode();
 
-        var content = await ParseResponse<IEnumerable<ParkingSpotDto>>(result, cancellationToken);
-        foreach (var parkingSpotDto in content)
-        {
-            _logger.LogInformation(parkingSpotDto.ToString());
-        }
+        var response = await ParseResponse<List<ParkingSpotDto>>(result, cancellationToken);
+        _logger.LogInformation("Received {Spots} parking spots.", response.Count);
+
+        return response;
     }
 
     private static HttpContent SerializeToJsonContent(object o)

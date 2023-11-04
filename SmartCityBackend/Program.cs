@@ -4,7 +4,9 @@ using FluentMigrator.Runner;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using SmartCityBackend.Infrastructure;
+using SmartCityBackend.Infrastructure.Jobs;
 using SmartCityBackend.Infrastructure.Middlewares;
 using SmartCityBackend.Infrastructure.Persistence;
 using SmartCityBackend.Infrastructure.PipelineBehavior;
@@ -37,6 +39,19 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 });
 
 builder.Services.AddHttpClients(builder.Configuration);
+
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("GetAllParkingSpotsJob");
+    q.AddJob<GetAllParkingSpotsJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("GetAllParkingSpots-trigger")
+        .WithCronSchedule("0 * * ? * *")
+    );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 

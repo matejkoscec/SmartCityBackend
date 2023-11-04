@@ -1,16 +1,10 @@
-﻿namespace SmartCityBackend.Infrastructure.Service.Response;
+﻿using SmartCityBackend.Models;
 
-public record ParkingSpotDto(string? Id,
-    double Latitude,
-    double Longitude,
-    ParkingSpotZoneDto ParkingSpotZoneDto,
+namespace SmartCityBackend.Infrastructure.Service.Response;
+
+public record ParkingSpotDto(string Id,
+    decimal Latitude,
+    decimal Longitude,
+    ParkingZone ParkingZone,
     bool Occupied,
     string OccupiedTimestamp);
-
-public enum ParkingSpotZoneDto
-{
-    Zone1,
-    Zone2,
-    Zone3,
-    Zone4
-}

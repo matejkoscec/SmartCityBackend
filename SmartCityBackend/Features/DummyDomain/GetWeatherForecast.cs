@@ -1,7 +1,6 @@
 ﻿using Carter;
 using MediatR;
 using SmartCityBackend.Features.DummyDomain.Response;
-using SmartCityBackend.Infrastructure.Service;
 
 namespace SmartCityBackend.Features.DummyDomain;
 
@@ -29,14 +28,8 @@ public sealed class
     };
 
     private readonly ILogger<GetWeatherForecastQueryHandler> _logger;
-    private readonly IParkingSimulationService _parkingSimulationService;
 
-    public GetWeatherForecastQueryHandler(ILogger<GetWeatherForecastQueryHandler> logger,
-        IParkingSimulationService parkingSimulationService)
-    {
-        _logger = logger;
-        _parkingSimulationService = parkingSimulationService;
-    }
+    public GetWeatherForecastQueryHandler(ILogger<GetWeatherForecastQueryHandler> logger) { _logger = logger; }
 
     public Task<IEnumerable<WeatherForecastResponse>> Handle(GetWeatherForecastQuery request,
         CancellationToken cancellationToken)
@@ -51,8 +44,6 @@ public sealed class
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
-        
-        _parkingSimulationService.Foo(cancellationToken);
 
         return Task.FromResult<IEnumerable<WeatherForecastResponse>>(responses);
     }

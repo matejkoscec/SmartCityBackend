@@ -1,6 +1,8 @@
-﻿namespace SmartCityBackend.Infrastructure.Service;
+﻿using SmartCityBackend.Infrastructure.Service.Response;
+
+namespace SmartCityBackend.Infrastructure.Service;
 
 public interface IParkingSimulationService
 {
-    Task Foo(CancellationToken cancellationToken);
+    Task<List<ParkingSpotDto>> GetAllParkingSpots(CancellationToken cancellationToken);
 }

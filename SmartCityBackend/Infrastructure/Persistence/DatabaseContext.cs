@@ -12,6 +12,16 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Role> Roles => Set<Role>();
+    
+    public DbSet<ActiveReservation> ActiveReservations => Set<ActiveReservation>();
+    
+    public DbSet<ReservationHistory> ReservationHistory => Set<ReservationHistory>();
+    
+    public DbSet<ParkingSpot> ParkingSpots => Set<ParkingSpot>();
+    
+    public DbSet<ParkingSpotHistory> ParkingSpotsHistory => Set<ParkingSpotHistory>();
+    
+    public DbSet<ZonePrice> ZonePrices => Set<ZonePrice>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
