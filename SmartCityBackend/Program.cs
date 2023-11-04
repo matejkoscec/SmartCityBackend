@@ -5,6 +5,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
+using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
 using SmartCityBackend.Infrastructure.Jobs;
 using SmartCityBackend.Infrastructure.Middlewares;
@@ -39,6 +40,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 });
 
 builder.Services.AddHttpClients(builder.Configuration);
+
+builder.Services.AddHostedService<EventHubListener>();
 
 builder.Services.AddQuartz(q =>
 {
