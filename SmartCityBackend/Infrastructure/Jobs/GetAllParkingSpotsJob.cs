@@ -67,9 +67,8 @@ public class GetAllParkingSpotsJob : IJob
             }
         }
 
-        if (updated > 0)
-        {
-            await _dbContext.SaveChangesAsync();
-        }
+
+        await _dbContext.SaveChangesAsync();
+        
     }
 }

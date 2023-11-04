@@ -56,6 +56,7 @@ builder.Services.AddQuartz(q =>
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
+
 var app = builder.Build();
 
 using (var scope = ((IApplicationBuilder)app).ApplicationServices.CreateScope())
