@@ -5,6 +5,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
+using SmartCityBackend.Features.Reservation;
 using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
 using SmartCityBackend.Infrastructure.Jobs;
