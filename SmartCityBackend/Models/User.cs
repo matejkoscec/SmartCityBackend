@@ -17,4 +17,8 @@ public class User : AuditableEntity
     public bool EmailVerified { get; set; }
 
     public IEnumerable<Role> Roles { get; set; } = Enumerable.Empty<Role>();
+
+    public IEnumerable<ActiveReservation> ActiveReservations { get; set; } = Enumerable.Empty<ActiveReservation>();
+
+    public IEnumerable<ReservationHistory> ReservationsHistory { get; set; } = Enumerable.Empty<ReservationHistory>();
 }
