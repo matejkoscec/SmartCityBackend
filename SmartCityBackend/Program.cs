@@ -4,6 +4,7 @@ using FluentMigrator.Runner;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
 using SmartCityBackend.Infrastructure.Middlewares;
 using SmartCityBackend.Infrastructure.Persistence;
@@ -37,6 +38,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 });
 
 builder.Services.AddHttpClients(builder.Configuration);
+
+builder.Services.AddHostedService<EventHubListener>();
 
 var app = builder.Build();
 
