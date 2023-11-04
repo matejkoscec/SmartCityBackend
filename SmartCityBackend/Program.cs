@@ -46,12 +46,21 @@ builder.Services.AddHostedService<EventHubListener>();
 
 builder.Services.AddQuartz(q =>
 {
-    var jobKey = new JobKey("GetAllParkingSpotsJob");
-    q.AddJob<GetAllParkingSpotsJob>(opts => opts.WithIdentity(jobKey));
+    var parkingSpotsJobKey = new JobKey("GetAllParkingSpotsJob");
+    q.AddJob<GetAllParkingSpotsJob>(opts => opts.WithIdentity(parkingSpotsJobKey));
 
     q.AddTrigger(opts => opts
-        .ForJob(jobKey)
+        .ForJob(parkingSpotsJobKey)
         .WithIdentity("GetAllParkingSpots-trigger")
+        .WithCronSchedule("0 0/1 * * * ?")
+    );
+    
+    var replaceReservationsJobKey = new JobKey("ReplaceReservationsJob");
+    q.AddJob<ReplaceReservationsJob>(opts => opts.WithIdentity(replaceReservationsJobKey));
+    
+    q.AddTrigger(opts => opts
+        .ForJob(replaceReservationsJobKey)
+        .WithIdentity("ReplaceReservations-trigger")
         .WithCronSchedule("0 0/1 * * * ?")
     );
 });
