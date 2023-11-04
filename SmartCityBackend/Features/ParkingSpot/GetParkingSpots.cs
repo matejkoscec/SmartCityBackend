@@ -11,7 +11,8 @@ namespace SmartCityBackend.Features.ParkingSpot;
 public record ParkingSpotCommandFilter(
     decimal? Latitude, 
     // Parking Spot Type
-    decimal? Longitude, 
+    decimal? Longitude,
+    decimal? Radius,
     ParkingZone? ParkingZone,
     bool? isOccupied,
     decimal? price) : IRequest<List<GetParkingSpotResponse>>;
@@ -60,7 +61,7 @@ public class GetParkingSpotsHandler : IRequestHandler<ParkingSpotCommandFilter, 
         {
             queryable = queryable.Where(c => c.Zone == request.ParkingZone);
         }
-        /*if (request.isOccupied.HasValue)
+        if (request.isOccupied.HasValue)
         {
             queryable = queryable.Where(p => p.ParkingSpotsHistory.Any(h => h.IsOccupied == request.isOccupied.Value));
         }
@@ -68,7 +69,29 @@ public class GetParkingSpotsHandler : IRequestHandler<ParkingSpotCommandFilter, 
         if (request.price.HasValue)
         {
             queryable = queryable.Where(p => p.ParkingSpotsHistory.Any(h => h.ZonePrice.Price == request.price.Value));
-        }*/
+        }
+        
+        if (request.Latitude.HasValue && request.Longitude.HasValue && request.Radius.HasValue)
+        {
+            // Calculate the bounding coordinates for the given radius
+            double latitude = (double)request.Latitude;
+            double longitude = (double)request.Longitude;
+            double radius = (double)request.Radius;
+
+            double earthRadius = 6371; // Earth's radius in kilometers (you can adjust this if needed)
+
+            double minLat = latitude - (radius / earthRadius) * (180.0 / Math.PI);
+            double maxLat = latitude + (radius / earthRadius) * (180.0 / Math.PI);
+            double minLng = longitude - (radius / earthRadius) * (180.0 / Math.PI) / Math.Cos(latitude * (Math.PI / 180.0));
+            double maxLng = longitude + (radius / earthRadius) * (180.0 / Math.PI) / Math.Cos(latitude * (Math.PI / 180.0));
+
+            // Filter parking spots within the bounding coordinates
+            queryable = queryable.Where(p =>
+                p.Lat >= (decimal)minLat &&
+                p.Lat <= (decimal)maxLat &&
+                p.Lng >= (decimal)minLng &&
+                p.Lng <= (decimal)maxLng);
+        }
         
         var filteredParkingSpots = await queryable.ToListAsync(cancellationToken);
     
@@ -79,21 +102,19 @@ public class GetParkingSpotsHandler : IRequestHandler<ParkingSpotCommandFilter, 
     
     private GetParkingSpotResponse MapToGetParkingSpotResponse(Models.ParkingSpot parkingSpot)
     {
-        /*
         decimal price = parkingSpot.ParkingSpotsHistory
             .Where(history => history.IsOccupied)
             .OrderByDescending(history => history.StartTime)
             .Select(history => history.ZonePrice.Price)
             .FirstOrDefault();
-            */
         
         return new GetParkingSpotResponse(
             parkingSpot.Id,
             parkingSpot.Lat,
             parkingSpot.Lng,
-            parkingSpot.Zone
-            /*parkingSpot.ParkingSpotsHistory.Any(h => h.IsOccupied),
-            price*/
+            parkingSpot.Zone,
+            parkingSpot.ParkingSpotsHistory.Any(h => h.IsOccupied),
+            price
         );
     }
     
