@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using SmartCityBackend.Features.EventHub;
+using SmartCityBackend.Features.Reservation;
 using SmartCityBackend.Infrastructure;
 using SmartCityBackend.Infrastructure.Jobs;
 using SmartCityBackend.Infrastructure.Middlewares;
@@ -55,6 +56,7 @@ builder.Services.AddQuartz(q =>
     );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
 
 var app = builder.Build();
 
