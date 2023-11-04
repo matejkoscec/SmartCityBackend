@@ -12,9 +12,9 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Role> Roles => Set<Role>();
-    
+
     public DbSet<EventHubInfo> EventHubInfo => Set<EventHubInfo>();
-    
+
     public DbSet<ActiveReservation> ActiveReservations => Set<ActiveReservation>();
 
     public DbSet<ReservationHistory> ReservationHistory => Set<ReservationHistory>();
@@ -223,8 +223,11 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
-            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
             entity.Property(e => e.Offset).HasColumnName("offset").IsRequired();
         });
     }
