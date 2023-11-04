@@ -8,12 +8,12 @@ namespace SmartCityBackend.Features.ParkingSpot;
 
 public sealed record ParkingSpotCommand(decimal Latitude, decimal Longitude, ParkingZone ParkingZone) : IRequest<ParkingSpotResponse>;
 
-public sealed record ParkingSpotResponse(string id,
-    double? latitude,
-    double? longitude,
-    string? parkingSpotZone,
-    bool? occupied,
-    DateTimeOffset? occupiedTimestamp);
+public sealed record ParkingSpotResponse(string Id,
+    double? Latitude,
+    double? Longitude,
+    string? ParkingSpotZone,
+    bool? Occupied,
+    DateTimeOffset? OccupiedTimestamp);
 
 public sealed class CreateParkingSpotCommandValidator : AbstractValidator<ParkingSpotCommand>
 {
