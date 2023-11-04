@@ -12,15 +12,15 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Role> Roles => Set<Role>();
-    
+
     public DbSet<ActiveReservation> ActiveReservations => Set<ActiveReservation>();
-    
+
     public DbSet<ReservationHistory> ReservationHistory => Set<ReservationHistory>();
-    
+
     public DbSet<ParkingSpot> ParkingSpots => Set<ParkingSpot>();
-    
+
     public DbSet<ParkingSpotHistory> ParkingSpotsHistory => Set<ParkingSpotHistory>();
-    
+
     public DbSet<ZonePrice> ZonePrices => Set<ZonePrice>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,7 +33,10 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
             entity.Property(e => e.Name).HasColumnName("name").IsRequired();
             entity.Property(e => e.Email).HasColumnName("email").IsRequired();
@@ -64,7 +67,10 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
             entity.Property(e => e.Name).HasColumnName("name").IsRequired();
 
@@ -84,15 +90,18 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
             entity.HasOne(e => e.User)
                 .WithMany(e => e.ActiveReservations)
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            entity.Property(e => e.Start).HasColumnName("start").IsRequired();
-            entity.Property(e => e.End).HasColumnName("end").IsRequired();
+            entity.Property(e => e.Start).HasColumnName("start").HasColumnType("timestamp with time zone").IsRequired();
+            entity.Property(e => e.End).HasColumnName("end").HasColumnType("timestamp with time zone").IsRequired();
         });
 
         modelBuilder.Entity<ReservationHistory>(entity =>
@@ -101,15 +110,18 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
             entity.HasOne(e => e.User)
                 .WithMany(e => e.ReservationsHistory)
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            entity.Property(e => e.Start).HasColumnName("start").IsRequired();
-            entity.Property(e => e.End).HasColumnName("end").IsRequired();
+            entity.Property(e => e.Start).HasColumnName("start").HasColumnType("timestamp with time zone").IsRequired();
+            entity.Property(e => e.End).HasColumnName("end").HasColumnType("timestamp with time zone").IsRequired();
         });
 
         modelBuilder.Entity<ParkingSpot>(entity =>
@@ -118,7 +130,10 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").IsRequired();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
             entity.Property(e => e.Lat).HasColumnName("lat").IsRequired();
             entity.Property(e => e.Lng).HasColumnName("lng").IsRequired();
@@ -131,16 +146,22 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
             entity.Property(e => e.IsOccupied).HasColumnName("is_occupied").IsRequired();
-            entity.Property(e => e.StartTime).HasColumnName("start_time").IsRequired();
+            entity.Property(e => e.StartTime)
+                .HasColumnName("start_time")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
 
             entity.HasOne(e => e.ParkingSpot)
                 .WithMany(e => e.ParkingSpotsHistory)
                 .HasForeignKey(e => e.ParkingSpotId)
                 .OnDelete(DeleteBehavior.NoAction);
-            
+
             entity.HasOne(e => e.ActiveReservation)
                 .WithMany(e => e.ParkingSpotsHistory)
                 .HasForeignKey(e => e.ActiveReservationId)
@@ -163,8 +184,11 @@ public class DatabaseContext : DbContext
 
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
-            
+            entity.Property(e => e.CreatedAtUtc)
+                .HasColumnName("created_at_utc")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
             entity.Property(e => e.Zone).HasColumnName("zone").IsRequired();
             entity.Property(e => e.Price).HasColumnName("price").IsRequired();
 

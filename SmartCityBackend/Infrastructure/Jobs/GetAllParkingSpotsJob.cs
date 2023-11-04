@@ -29,6 +29,7 @@ public class GetAllParkingSpotsJob : IJob
         var existingMappedById = existingParkingSpots.GroupBy(x => x.Id)
             .ToDictionary(x => x.Key, x => x.First());
 
+        var updated = 0;
         foreach (var spotDto in allParkingSpots)
         {
             var parsedGuid = Guid.TryParse(spotDto.Id, out var guid);
@@ -41,10 +42,15 @@ public class GetAllParkingSpotsJob : IJob
             var exists = existingMappedById.TryGetValue(guid, out var existing);
             if (exists && existing is not null)
             {
+                if (existing.Lat == spotDto.Latitude && existing.Lng == spotDto.Longitude)
+                {
+                    continue;
+                }
+
                 existing.Lat = spotDto.Latitude;
                 existing.Lng = spotDto.Longitude;
                 existing.Zone = spotDto.ParkingZone;
-                _dbContext.Update(existing);
+                updated++;
             }
             else
             {
@@ -60,6 +66,9 @@ public class GetAllParkingSpotsJob : IJob
             }
         }
 
-        await _dbContext.SaveChangesAsync();
+        if (updated > 0)
+        {
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

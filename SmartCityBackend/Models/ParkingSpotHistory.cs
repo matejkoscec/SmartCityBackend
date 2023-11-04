@@ -4,7 +4,7 @@ public class ParkingSpotHistory : AuditableEntity
 {
     public bool IsOccupied { get; set; }
 
-    public DateTime StartTime { get; set; }
+    public DateTimeOffset StartTime { get; set; }
 
     public Guid ParkingSpotId { get; set; }
     public ParkingSpot ParkingSpot { get; set; } = null!;

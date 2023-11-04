@@ -9,34 +9,34 @@ public class AddReservationsAndParkingSpotAndZonePrice : Migration {
     {
         Create.Table("active_reservation")
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
-            .WithColumn("created_at_utc").AsDateTime().NotNullable()
+            .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("user_id").AsInt64().NotNullable().ForeignKey("FK_active_reservation_user_id", "users", "id")
-            .WithColumn("start").AsDateTime().NotNullable()
-            .WithColumn("end").AsDateTime().NotNullable();
+            .WithColumn("start").AsDateTimeOffset().NotNullable()
+            .WithColumn("end").AsDateTimeOffset().NotNullable();
 
         Create.Table("reservation_history")
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
-            .WithColumn("created_at_utc").AsDateTime().NotNullable()
+            .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("user_id").AsInt64().NotNullable().ForeignKey("FK_reservation_history_user_id", "users", "id")
-            .WithColumn("start").AsDateTime().NotNullable()
-            .WithColumn("end").AsDateTime().NotNullable();
+            .WithColumn("start").AsDateTimeOffset().NotNullable()
+            .WithColumn("end").AsDateTimeOffset().NotNullable();
         
         Create.Table("parking_spot")
             .WithColumn("id").AsGuid().PrimaryKey().NotNullable()
-            .WithColumn("created_at_utc").AsDateTime().NotNullable()
+            .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("lat").AsDecimal().NotNullable()
             .WithColumn("lng").AsDecimal().NotNullable()
             .WithColumn("zone").AsInt32().NotNullable();
         
         Create.Table("zone_price")
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
-            .WithColumn("created_at_utc").AsDateTime().NotNullable()
+            .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("zone").AsInt32().NotNullable()
             .WithColumn("price").AsDecimal().NotNullable();
 
         Create.Table("parking_spot_history")
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
-            .WithColumn("created_at_utc").AsDateTime().NotNullable()
+            .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("parking_spot_id").AsGuid().NotNullable().ForeignKey("FK_parking_spot_history_parking_spot_id", "parking_spot", "id")
             .WithColumn("active_reservation_id").AsInt64().Nullable().ForeignKey("FK_parking_spot_history_active_reservation_id", "active_reservation", "id")
             .WithColumn("reservation_history_id").AsInt64().Nullable().ForeignKey("FK_parking_spot_history_reservation_history_id", "reservation_history", "id")

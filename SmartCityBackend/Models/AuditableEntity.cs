@@ -4,7 +4,7 @@ public abstract class AuditableEntity<TId>
 {
     public TId Id { get; set; } = default!;
 
-    public DateTime CreatedAtUtc { get; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAtUtc { get; } = DateTimeOffset.UtcNow;
 }
 
 public abstract class AuditableEntity : AuditableEntity<long>

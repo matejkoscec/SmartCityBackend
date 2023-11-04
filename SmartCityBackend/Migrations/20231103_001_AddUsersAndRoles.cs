@@ -9,7 +9,7 @@ public class AddUsersAndRoles : Migration {
     {
         Create.Table("users")
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
-            .WithColumn("created_at_utc").AsDateTime().NotNullable()
+            .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("name").AsString().NotNullable()
             .WithColumn("email").AsString().NotNullable().Unique()
             .WithColumn("password").AsString().NotNullable()
@@ -20,7 +20,7 @@ public class AddUsersAndRoles : Migration {
 
         Create.Table("role")
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
-            .WithColumn("created_at_utc").AsDateTime().NotNullable()
+            .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("name").AsString().NotNullable().Unique();
 
         Create.Table("user_role")
