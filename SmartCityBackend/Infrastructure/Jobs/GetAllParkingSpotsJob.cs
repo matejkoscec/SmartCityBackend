@@ -63,6 +63,7 @@ public class GetAllParkingSpotsJob : IJob
                 };
                 _dbContext.Add(newSpot);
                 _logger.LogInformation("Added new parking spot {Guid}", newSpot.Id);
+                updated++;
             }
         }
 

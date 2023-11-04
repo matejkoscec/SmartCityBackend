@@ -14,7 +14,7 @@ public class DatabaseContext : DbContext
     public DbSet<Role> Roles => Set<Role>();
     
     public DbSet<EventHubInfo> EventHubInfo => Set<EventHubInfo>();
-
+    
     public DbSet<ActiveReservation> ActiveReservations => Set<ActiveReservation>();
 
     public DbSet<ReservationHistory> ReservationHistory => Set<ReservationHistory>();
@@ -97,6 +97,7 @@ public class DatabaseContext : DbContext
                 .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
+            entity.Property(e => e.UserId).HasColumnName("user_id").IsRequired();
             entity.HasOne(e => e.User)
                 .WithMany(e => e.ActiveReservations)
                 .HasForeignKey(e => e.UserId)
@@ -104,6 +105,12 @@ public class DatabaseContext : DbContext
 
             entity.Property(e => e.Start).HasColumnName("start").HasColumnType("timestamp with time zone").IsRequired();
             entity.Property(e => e.End).HasColumnName("end").HasColumnType("timestamp with time zone").IsRequired();
+
+            entity.Property(e => e.ParkingSpotId).HasColumnName("parking_spot_id").IsRequired();
+            entity.HasOne(e => e.ParkingSpot)
+                .WithMany(e => e.ActiveReservations)
+                .HasForeignKey(e => e.ParkingSpotId)
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<ReservationHistory>(entity =>
@@ -117,6 +124,7 @@ public class DatabaseContext : DbContext
                 .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
+            entity.Property(e => e.UserId).HasColumnName("user_id").IsRequired();
             entity.HasOne(e => e.User)
                 .WithMany(e => e.ReservationsHistory)
                 .HasForeignKey(e => e.UserId)
@@ -124,6 +132,11 @@ public class DatabaseContext : DbContext
 
             entity.Property(e => e.Start).HasColumnName("start").HasColumnType("timestamp with time zone").IsRequired();
             entity.Property(e => e.End).HasColumnName("end").HasColumnType("timestamp with time zone").IsRequired();
+
+            entity.HasMany(e => e.ParkingSpotsHistory)
+                .WithOne(e => e.ReservationHistory)
+                .HasForeignKey(e => e.ReservationHistoryId)
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<ParkingSpot>(entity =>
@@ -159,21 +172,25 @@ public class DatabaseContext : DbContext
                 .HasColumnType("timestamp with time zone")
                 .IsRequired();
 
+            entity.Property(e => e.ParkingSpotId).HasColumnName("parking_spot_id").IsRequired();
             entity.HasOne(e => e.ParkingSpot)
                 .WithMany(e => e.ParkingSpotsHistory)
                 .HasForeignKey(e => e.ParkingSpotId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            entity.Property(e => e.ActiveReservationId).HasColumnName("active_reservation_id");
             entity.HasOne(e => e.ActiveReservation)
                 .WithMany(e => e.ParkingSpotsHistory)
                 .HasForeignKey(e => e.ActiveReservationId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            entity.Property(e => e.ReservationHistoryId).HasColumnName("reservation_history_id");
             entity.HasOne(e => e.ReservationHistory)
                 .WithMany(e => e.ParkingSpotsHistory)
                 .HasForeignKey(e => e.ReservationHistoryId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            entity.Property(e => e.ZonePriceId).HasColumnName("zone_price_id").IsRequired();
             entity.HasOne(e => e.ZonePrice)
                 .WithMany(e => e.ParkingSpotsHistory)
                 .HasForeignKey(e => e.ZonePriceId)
@@ -203,7 +220,7 @@ public class DatabaseContext : DbContext
         modelBuilder.Entity<EventHubInfo>(entity =>
         {
             entity.ToTable("event_hub_info");
-            
+
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
             entity.Property(e => e.CreatedAtUtc).HasColumnName("created_at_utc").IsRequired();
