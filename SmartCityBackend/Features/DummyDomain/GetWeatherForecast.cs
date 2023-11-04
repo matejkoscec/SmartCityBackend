@@ -1,28 +1,23 @@
-﻿using backend_template.Features.DummyDomain.Response;
-using Carter;
-using FluentValidation;
+﻿using Carter;
 using MediatR;
+using SmartCityBackend.Features.DummyDomain.Response;
+using SmartCityBackend.Infrastructure.Service;
 
-namespace backend_template.Features.DummyDomain;
+namespace SmartCityBackend.Features.DummyDomain;
 
-public record GetWeatherForecastQuery(int End) : IRequest<IEnumerable<WeatherForecastResponse>>;
+public record GetWeatherForecastQuery : IRequest<IEnumerable<WeatherForecastResponse>>;
 
 public class GetWeatherEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("/weather",
-            async (ISender sender, int end) =>
+            async (ISender sender) =>
             {
-                var response = await sender.Send(new GetWeatherForecastQuery(end));
+                var response = await sender.Send(new GetWeatherForecastQuery());
                 return Results.Ok(response);
             });
     }
-}
-
-public class GetWeatherForecastQueryValidator : AbstractValidator<GetWeatherForecastQuery>
-{
-    public GetWeatherForecastQueryValidator() { RuleFor(x => x.End).InclusiveBetween(2, 5); }
 }
 
 public sealed class
@@ -34,15 +29,21 @@ public sealed class
     };
 
     private readonly ILogger<GetWeatherForecastQueryHandler> _logger;
+    private readonly IParkingSimulationService _parkingSimulationService;
 
-    public GetWeatherForecastQueryHandler(ILogger<GetWeatherForecastQueryHandler> logger) { _logger = logger; }
+    public GetWeatherForecastQueryHandler(ILogger<GetWeatherForecastQueryHandler> logger,
+        IParkingSimulationService parkingSimulationService)
+    {
+        _logger = logger;
+        _parkingSimulationService = parkingSimulationService;
+    }
 
     public Task<IEnumerable<WeatherForecastResponse>> Handle(GetWeatherForecastQuery request,
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("Some logging");
 
-        var responses = Enumerable.Range(1, request.End)
+        var responses = Enumerable.Range(1, 5)
             .Select(index => new WeatherForecastResponse
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -50,6 +51,8 @@ public sealed class
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        
+        _parkingSimulationService.Foo(cancellationToken);
 
         return Task.FromResult<IEnumerable<WeatherForecastResponse>>(responses);
     }

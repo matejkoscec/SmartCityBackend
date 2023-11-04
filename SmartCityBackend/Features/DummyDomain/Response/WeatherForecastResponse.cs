@@ -1,4 +1,4 @@
-namespace backend_template.Features.DummyDomain.Response;
+namespace SmartCityBackend.Features.DummyDomain.Response;
 
 public class WeatherForecastResponse
 {

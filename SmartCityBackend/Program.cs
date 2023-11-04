@@ -4,6 +4,7 @@ using FluentMigrator.Runner;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SmartCityBackend.Infrastructure;
 using SmartCityBackend.Infrastructure.Middlewares;
 using SmartCityBackend.Infrastructure.Persistence;
 using SmartCityBackend.Infrastructure.PipelineBehavior;
@@ -34,6 +35,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(DatabaseContext)));
 });
+
+builder.Services.AddHttpClients(builder.Configuration);
 
 var app = builder.Build();
 
