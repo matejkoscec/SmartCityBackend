@@ -8,10 +8,13 @@ using Quartz;
 using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
 using SmartCityBackend.Infrastructure.Hubs;
+using SmartCityBackend.Infrastructure.Hash;
 using SmartCityBackend.Infrastructure.Jobs;
+using SmartCityBackend.Infrastructure.JwtProvider;
 using SmartCityBackend.Infrastructure.Middlewares;
 using SmartCityBackend.Infrastructure.Persistence;
 using SmartCityBackend.Infrastructure.PipelineBehavior;
+using SmartCityBackend.Infrastructure.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,9 +66,21 @@ builder.Services.AddQuartz(q =>
         .WithIdentity("ReplaceReservations-trigger")
         .WithCronSchedule("0 0/1 * * * ?")
     );
+    
+    var trainModelJobKey = new JobKey("TrainModelJob");
+    q.AddJob<TrainModelJob>(opts => opts.WithIdentity(trainModelJobKey));
+    
+    q.AddTrigger(opts => opts
+        .ForJob(trainModelJobKey)
+        .WithIdentity("TrainModel-trigger")
+        .WithCronSchedule("0 0/30 * ? * *")
+    );
 });
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 var app = builder.Build();
 

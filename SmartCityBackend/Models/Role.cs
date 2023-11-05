@@ -7,5 +7,5 @@ public class Role : AuditableEntity
 {
     public string Name { get; set; } = null!;
 
-    public IEnumerable<User> Users { get; set; } = Enumerable.Empty<User>();
+    public IEnumerable<User> Users { get; set; } = new List<User>();
 }

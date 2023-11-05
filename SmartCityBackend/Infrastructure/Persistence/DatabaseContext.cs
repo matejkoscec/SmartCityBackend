@@ -24,6 +24,8 @@ public class DatabaseContext : DbContext
     public DbSet<ParkingSpotHistory> ParkingSpotsHistory => Set<ParkingSpotHistory>();
 
     public DbSet<ZonePrice> ZonePrices => Set<ZonePrice>();
+    
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,8 +55,8 @@ public class DatabaseContext : DbContext
                 .WithMany(e => e.Users)
                 .UsingEntity(
                     "user_role",
-                    r => r.HasOne(typeof(Role)).WithMany().HasForeignKey("FK_user_role_role_id"),
-                    l => l.HasOne(typeof(User)).WithMany().HasForeignKey("FK_user_role_user_id")
+                    r => r.HasOne(typeof(Role)).WithMany().HasForeignKey("role_id"),
+                    l => l.HasOne(typeof(User)).WithMany().HasForeignKey("user_id")
                 );
 
             entity.HasMany(e => e.ActiveReservations)
@@ -81,8 +83,8 @@ public class DatabaseContext : DbContext
                 .WithMany(e => e.Roles)
                 .UsingEntity(
                     "user_role",
-                    r => r.HasOne(typeof(Role)).WithMany().HasForeignKey("FK_user_role_role_id"),
-                    l => l.HasOne(typeof(User)).WithMany().HasForeignKey("FK_user_role_user_id")
+                    r => r.HasOne(typeof(Role)).WithMany().HasForeignKey("role_id"),
+                    l => l.HasOne(typeof(User)).WithMany().HasForeignKey("user_id")
                 );
         });
 
@@ -138,6 +140,30 @@ public class DatabaseContext : DbContext
                 .HasForeignKey(e => e.ReservationHistoryId)
                 .OnDelete(DeleteBehavior.NoAction);
         });
+        modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.ToTable("refresh_token");
+                
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("id").ValueGeneratedOnAdd();
+                entity.Property(e => e.CreatedAtUtc)
+                    .HasColumnName("created_at_utc")
+                    .HasColumnType("timestamp with time zone")
+                    .IsRequired();
+                
+                entity.Property(e => e.UserId).HasColumnName("user_id").IsRequired();
+                entity.HasOne(e => e.User)
+                    .WithMany(e => e.RefreshTokens)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                
+                entity.Property(e => e.Token).HasColumnName("token").IsRequired();
+                entity.Property(e => e.Expires)
+                    .HasColumnName("expires_at_utc")
+                    .HasColumnType("timestamp with time zone")
+                    .IsRequired();
+            }
+        );
 
         modelBuilder.Entity<ParkingSpot>(entity =>
         {

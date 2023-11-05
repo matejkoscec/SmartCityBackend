@@ -59,7 +59,7 @@ public class GetAllParkingSpotsJob : IJob
                 {
                     IsOccupied = spotDto.Occupied,
                     ParkingSpotId = guid,
-                    // TODO fix this
+                    // TODO fix this, take OccupiedTimestamp
                     StartTime = CurrentSimulationTime.GetCurrentSimulationTime() ?? DateTimeOffset.Now.ToUniversalTime(),
                     ActiveReservationId = null,
                     ReservationHistoryId = null,
