@@ -2,14 +2,15 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using SmartCityBackend.Features.Analytics.Util;
 using SmartCityBackend.Infrastructure.Persistence;
-using SmartCityBackend.Models;
 
 namespace SmartCityBackend.Features.Analytics;
 
-public record GetRevenueRequest(DateTimeOffset? Start, DateTimeOffset? End, Guid ParkingSpotId) : IRequest<GetRevenueResponse>;
+public record GetRevenueRequest
+    (DateTimeOffset Start, DateTimeOffset End, Guid ParkingSpotId) : IRequest<GetRevenueResponse>;
 
-public record GetRevenueResponse(decimal Revenue);
+public record GetRevenueResponse(double Revenue);
 
 // TODO revenue per periods (for example per hour) so it can be easily displayed on a graph
 
@@ -45,50 +46,52 @@ public class GetRevenueHandler : IRequestHandler<GetRevenueRequest, GetRevenueRe
 
     public async Task<GetRevenueResponse> Handle(GetRevenueRequest request, CancellationToken cancellationToken)
     {
-        IList<ParkingSpotHistory> parkingSpotHistories = await _databaseContext.ParkingSpotsHistory
+        var parkingSpotHistories = await _databaseContext.ParkingSpotsHistory
             .Where(psh => psh.ParkingSpotId == request.ParkingSpotId)
             .Include(x => x.ZonePrice)
             .OrderBy(x => x.StartTime)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        IList<ParkingSpotHistory> parkingSpotHistoriesFiltered = new List<ParkingSpotHistory>();
-        
-        if (request.Start != null)
-            parkingSpotHistoriesFiltered = parkingSpotHistoriesFiltered.Where(x => x.StartTime >= request.Start).ToList();
-        
-        
-        if (request.End != null)
-            parkingSpotHistoriesFiltered = parkingSpotHistoriesFiltered.Where(x => x.StartTime <= request.End).ToList();
-        
-        
-        if(request.Start == null && request.End == null)
-            parkingSpotHistoriesFiltered = parkingSpotHistories.ToList();
+        // IList<ParkingSpotHistory> parkingSpotHistoriesFiltered = new List<ParkingSpotHistory>();
+        //
+        // if (request.Start != null)
+        //     parkingSpotHistoriesFiltered = parkingSpotHistoriesFiltered.Where(x => x.StartTime >= request.Start).ToList();
+        //
+        //
+        // if (request.End != null)
+        //     parkingSpotHistoriesFiltered = parkingSpotHistoriesFiltered.Where(x => x.StartTime <= request.End).ToList();
+        //
+        //
+        // if(request.Start == null && request.End == null)
+        //     parkingSpotHistoriesFiltered = parkingSpotHistories.ToList();
+        //
+        // if(parkingSpotHistoriesFiltered.Count == 0)
+        //     return new GetRevenueResponse(0);
+        //
+        // decimal totalRevenue = 0;
+        // decimal totalDuration = 0;
+        //
+        // for (int i = 0; i < parkingSpotHistoriesFiltered.Count - 1; i += 2)
+        // {
+        //     ParkingSpotHistory firstHistory = parkingSpotHistoriesFiltered[i];
+        //     ParkingSpotHistory secondHistory = parkingSpotHistoriesFiltered[i + 1];
+        //     
+        //     
+        //     DateTimeOffset reservationStart = firstHistory.StartTime;
+        //     DateTimeOffset reservationEnd = secondHistory.StartTime;
+        //     
+        //     
+        //     decimal price = firstHistory.ZonePrice.Price;
+        //     
+        //     decimal reservationDuration = (decimal) (reservationEnd - reservationStart).TotalHours;
+        //     
+        //     totalDuration += reservationDuration;
+        //     totalRevenue += price * reservationDuration;
+        // }
 
-        if(parkingSpotHistoriesFiltered.Count == 0)
-            return new GetRevenueResponse(0);
+        var totalRevenue = AnalyticsUtil.GetRevenueForParkingSpot(request.Start, request.End, parkingSpotHistories);
 
-        decimal totalRevenue = 0;
-        decimal totalDuration = 0;
-        
-        for (int i = 0; i < parkingSpotHistoriesFiltered.Count - 1; i += 2)
-        {
-            ParkingSpotHistory firstHistory = parkingSpotHistoriesFiltered[i];
-            ParkingSpotHistory secondHistory = parkingSpotHistoriesFiltered[i + 1];
-            
-            
-            DateTimeOffset reservationStart = firstHistory.StartTime;
-            DateTimeOffset reservationEnd = secondHistory.StartTime;
-            
-            
-            decimal price = firstHistory.ZonePrice.Price;
-            
-            decimal reservationDuration = (decimal) (reservationEnd - reservationStart).TotalHours;
-            
-            totalDuration += reservationDuration;
-            totalRevenue += price * reservationDuration;
-        }
-        
         return new GetRevenueResponse(totalRevenue);
     }
 }
