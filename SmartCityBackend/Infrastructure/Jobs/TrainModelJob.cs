@@ -13,7 +13,7 @@ public class TrainModelJob : IJob
             StartInfo = new ProcessStartInfo
             {
                 FileName = "conda",
-                Arguments = "init /bin/bash",
+                Arguments = "init --all",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
