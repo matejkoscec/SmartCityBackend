@@ -30,7 +30,7 @@ public class TrainModelJob : IJob
             StartInfo = new ProcessStartInfo
             {
                 FileName = "conda",
-                Arguments = "env create --name codebooq --file Scripts/env.txt",
+                Arguments = "env create --name codebooq --file Scripts/env.yml",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
