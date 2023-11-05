@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace SmartCityBackend.Models;
+﻿namespace SmartCityBackend.Models;
 
 public class ParkingSpot : AuditableEntity<Guid>
 {

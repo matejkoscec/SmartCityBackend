@@ -50,7 +50,7 @@ public class GetAllParkingSpotsJob : IJob
 
                 existing.Lat = spotDto.Latitude;
                 existing.Lng = spotDto.Longitude;
-                existing.Zone = spotDto.ParkingZone;
+                existing.Zone = spotDto.ParkingSpotZone;
                 updated++;
             }
             else
@@ -63,7 +63,7 @@ public class GetAllParkingSpotsJob : IJob
                     StartTime = CurrentSimulationTime.GetCurrentSimulationTime() ?? DateTimeOffset.Now.ToUniversalTime(),
                     ActiveReservationId = null,
                     ReservationHistoryId = null,
-                    ZonePriceId = spotDto.ParkingZone switch
+                    ZonePriceId = spotDto.ParkingSpotZone switch
                     {
                         ParkingZone.Zone1 => 1,
                         ParkingZone.Zone2 => 2,
@@ -78,7 +78,7 @@ public class GetAllParkingSpotsJob : IJob
                     Id = guid,
                     Lat = spotDto.Latitude,
                     Lng = spotDto.Longitude,
-                    Zone = spotDto.ParkingZone
+                    Zone = spotDto.ParkingSpotZone
                 };
                 
                 _dbContext.ParkingSpotsHistory.Add(parkingSpotStartingHistory);

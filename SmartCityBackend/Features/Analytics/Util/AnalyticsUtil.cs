@@ -26,9 +26,19 @@ public class AnalyticsUtil
             .OrderBy(history => history.StartTime)
             .ToList();
         
+        if (occupiedRecords.Count == 0 || unoccupiedRecords.Count == 0)
+        {
+            return 0;
+        }
+        
         var unoccupiedRecordsAfterFirstOccupied = unoccupiedRecords
             .Where(unoccupiedRecord => unoccupiedRecord.StartTime > occupiedRecords.First().StartTime)
             .ToList();
+
+        if (unoccupiedRecordsAfterFirstOccupied.Count == 0)
+        {
+            return 0;   
+        }
         
         var totalOccupiedTime = 0.0;
        
