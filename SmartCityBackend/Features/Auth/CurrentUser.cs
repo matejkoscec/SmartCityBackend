@@ -44,6 +44,11 @@ public class CurrentUserHandler : IRequestHandler<CurrentUserCommand, CurrentUse
         var user = await _databaseContext.Users.Include(x => x.Roles)
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == userContext.Id, cancellationToken);
+
+        foreach (var role in user.Roles)
+        {
+            role.Users = null!;
+        }
         if (user == null)
         {
             throw new("User not found");
