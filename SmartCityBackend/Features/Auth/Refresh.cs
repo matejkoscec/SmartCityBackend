@@ -15,7 +15,7 @@ public class RefreshEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/refresh",
+        app.MapPost("/api/refresh",
             async (ISender sender, HttpContext context) =>
             {
                 var response = await sender.Send(new RefreshCommand(context));
@@ -39,7 +39,7 @@ public sealed class RefreshCommandHandler : IRequestHandler<RefreshCommand, Refr
 
     public async Task<RefreshResponse> Handle(RefreshCommand command, CancellationToken cancellationToken)
     {
-        var refreshToken = command.Context.Request.Cookies["refresh_token"];
+        var refreshToken = command.Context.Request.Cookies["refreshToken"];
 
         if (refreshToken == null)
         {

@@ -32,8 +32,8 @@ public class UserContextService: IUserContextService
         string? preferredUsername = _context.Request.HttpContext.User.FindFirst("PreferredUsername")?.Value;
         string? givenName = _context.Request.HttpContext.User.FindFirst("GivenName")?.Value;
         string? FamilyName = _context.Request.HttpContext.User.FindFirst("FamilyName")?.Value;
-        
-        userContext.Id = int.Parse(id ?? string.Empty);
+
+        userContext.Id = int.Parse(id ?? "0");
         userContext.Email = email;
         Task<Role?> existing = _databaseContext.Roles.SingleOrDefaultAsync(x => x.Name == role);
         userContext.Role = existing.Result!;
