@@ -2,8 +2,8 @@
 
 public enum ParkingZone
 {
-    Zone1 = 1,
-    Zone2 = 2,
-    Zone3 = 3,
-    Zone4 = 4
+    Zone1 = 0,
+    Zone2 = 1,
+    Zone3 = 2,
+    Zone4 = 3
 }

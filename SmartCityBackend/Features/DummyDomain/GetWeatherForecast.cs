@@ -10,7 +10,7 @@ public class GetWeatherEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/weather",
+        app.MapGet("/api/weather",
             async (ISender sender) =>
             {
                 var response = await sender.Send(new GetWeatherForecastQuery());

@@ -11,7 +11,7 @@ public class DeleteParkingSpotEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapDelete("/parking-spot/delete/{id}", async (ISender sender, Guid guidId) =>
+        app.MapDelete("/api/parking-spot/delete/{id}", async (ISender sender, Guid guidId) =>
         {
             string response = await sender.Send(new DeleteParkingSpotCommand(guidId, null));
             return Results.Ok(response);

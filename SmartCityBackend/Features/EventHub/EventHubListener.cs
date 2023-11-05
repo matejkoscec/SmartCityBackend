@@ -1,7 +1,10 @@
 using System.Text;
 using System.Text.Json;
 using Azure.Messaging.EventHubs.Consumer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using SmartCityBackend.Infrastructure;
+using SmartCityBackend.Infrastructure.Hubs;
 using SmartCityBackend.Infrastructure.Persistence;
 using SmartCityBackend.Infrastructure.Utils;
 using SmartCityBackend.Models;
@@ -20,13 +23,16 @@ public class EventHubListener : BackgroundService
     private readonly ILogger<EventHubListener> _logger;
     private readonly EventHubConsumerClient _consumerClient;
     private readonly DatabaseContext _dbContext;
+    private readonly IHubContext<ParkingSpotFeedHub, ILocationClient> _hubContext;
     private readonly string _partitionId;
 
     public EventHubListener(IConfiguration configuration,
         IServiceScopeFactory iServiceScopeFactory,
-        ILogger<EventHubListener> logger)
+        ILogger<EventHubListener> logger,
+        IHubContext<ParkingSpotFeedHub, ILocationClient> hubContext)
     {
         _logger = logger;
+        _hubContext = hubContext;
         var eventHubConnectionString = configuration.GetSection("EventHub:ConnectionString").Value!;
         var eventHubName = configuration.GetSection("EventHub.Name").Value!;
         _consumerClient = new EventHubConsumerClient(EventHubConsumerClient.DefaultConsumerGroupName,
@@ -87,6 +93,9 @@ public class EventHubListener : BackgroundService
             };
 
             _dbContext.ParkingSpotsHistory.Add(parkingSpotHistory);
+
+            var message = JsonSerializer.Serialize(parkingSpotHistory, Json.DefaultSerializerOptions);
+            _hubContext.Clients.All.ReceiveMessage(message);
 
             await _dbContext.SaveChangesAsync(stoppingToken);
         }

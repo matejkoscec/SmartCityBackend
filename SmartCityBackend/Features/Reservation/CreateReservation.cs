@@ -27,7 +27,7 @@ public class CreateReservationEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/reservation/create", async (ISender sender, CreateReservationCommand reservation) =>
+        app.MapPost("/api/reservation/create", async (ISender sender, CreateReservationCommand reservation) =>
         {
             var response = await sender.Send(reservation);
             return Results.Ok(response);

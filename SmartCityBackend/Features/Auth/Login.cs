@@ -23,7 +23,7 @@ public class LoginEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/login",
+        app.MapPost("/api/login",
             async (ISender sender, LoginRequest request, HttpContext context) =>
             {
                 var response = await sender.Send(new LoginCommand(request.Email, request.Password, context));

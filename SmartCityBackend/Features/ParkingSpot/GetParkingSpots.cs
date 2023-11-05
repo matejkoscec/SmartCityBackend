@@ -14,8 +14,8 @@ public record ParkingSpotCommandFilter(
     decimal? Longitude,
     decimal? Radius,
     ParkingZone? ParkingZone,
-    bool? isOccupied,
-    decimal? price) : IRequest<List<GetParkingSpotResponse>>;
+    bool? IsOccupied,
+    decimal? Price) : IRequest<List<GetParkingSpotResponse>>;
 
 public record GetParkingSpotResponse(
     Guid Id,
@@ -23,20 +23,13 @@ public record GetParkingSpotResponse(
     decimal Longitude,
     ParkingZone ParkingZone,
     bool? Occupied = null,
-    decimal? price = null);
-
-public sealed class GetParkingSpotsValidator : AbstractValidator<ParkingSpotCommandFilter>
-{
-    public GetParkingSpotsValidator()
-    {
-    }
-}
+    decimal? Price = null);
 
 public class GetParkingSpotsEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/parking-spot/get-parking-spots", async (ISender sender, ParkingSpotCommandFilter parkingSpot) =>
+        app.MapPost("/api/parking-spot/get-parking-spots", async (ISender sender, ParkingSpotCommandFilter parkingSpot) =>
         {
             var response = await sender.Send(parkingSpot);
             return Results.Ok(response);
@@ -65,14 +58,14 @@ public class GetParkingSpotsHandler : IRequestHandler<ParkingSpotCommandFilter, 
             queryable = queryable.Where(c => c.Zone == request.ParkingZone);
         }
 
-        if (request.isOccupied.HasValue)
+        if (request.IsOccupied.HasValue)
         {
-            queryable = queryable.Where(p => p.ParkingSpotsHistory.Any(h => h.IsOccupied == request.isOccupied.Value));
+            queryable = queryable.Where(p => p.ParkingSpotsHistory.Any(h => h.IsOccupied == request.IsOccupied.Value));
         }
 
-        if (request.price.HasValue)
+        if (request.Price.HasValue)
         {
-            queryable = queryable.Where(p => p.ParkingSpotsHistory.Any(h => h.ZonePrice.Price == request.price.Value));
+            queryable = queryable.Where(p => p.ParkingSpotsHistory.Any(h => h.ZonePrice.Price == request.Price.Value));
         }
 
         if (request.Latitude.HasValue && request.Longitude.HasValue && request.Radius.HasValue)

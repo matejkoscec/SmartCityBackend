@@ -5,9 +5,9 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
-using SmartCityBackend.Features.Reservation;
 using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
+using SmartCityBackend.Infrastructure.Hubs;
 using SmartCityBackend.Infrastructure.Jobs;
 using SmartCityBackend.Infrastructure.Middlewares;
 using SmartCityBackend.Infrastructure.Persistence;
@@ -54,18 +54,18 @@ builder.Services.AddQuartz(q =>
         .WithIdentity("GetAllParkingSpots-trigger")
         .WithCronSchedule("0 0/1 * * * ?")
     );
-    
+
     var replaceReservationsJobKey = new JobKey("ReplaceReservationsJob");
     q.AddJob<ReplaceReservationsJob>(opts => opts.WithIdentity(replaceReservationsJobKey));
-    
+
     q.AddTrigger(opts => opts
         .ForJob(replaceReservationsJobKey)
         .WithIdentity("ReplaceReservations-trigger")
         .WithCronSchedule("0 0/1 * * * ?")
     );
 });
-builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
@@ -88,5 +88,7 @@ app.UseMiddleware<ValidationMiddleware>();
 app.MapCarter();
 
 app.InitializeDb();
+
+app.MapHub<ParkingSpotFeedHub>("/hub/parking-spot");
 
 app.Run();

@@ -32,7 +32,7 @@ public class CreateParkingSpotEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/parking-spot/create", async (ISender sender, ParkingSpotCommand parkingSpot) =>
+        app.MapPost("/api/parking-spot/create", async (ISender sender, ParkingSpotCommand parkingSpot) =>
         {
             var response = await sender.Send(parkingSpot);
             return Results.Ok(response);

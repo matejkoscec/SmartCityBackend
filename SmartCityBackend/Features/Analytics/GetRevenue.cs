@@ -24,7 +24,7 @@ public class GetRevenueEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/analytics/get-revenue", async (ISender sender, GetRevenueRequest getRevenueRequest) =>
+        app.MapPost("/api/analytics/get-revenue", async (ISender sender, GetRevenueRequest getRevenueRequest) =>
         {
             var response = await sender.Send(getRevenueRequest);
             return Results.Ok(response);
