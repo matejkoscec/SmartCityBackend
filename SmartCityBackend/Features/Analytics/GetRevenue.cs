@@ -11,6 +11,7 @@ public record GetRevenueRequest(DateTimeOffset? Start, DateTimeOffset? End, Guid
 
 public record GetRevenueResponse(decimal Revenue);
 
+// TODO revenue per periods (for example per hour) so it can be easily displayed on a graph
 
 public sealed class GetRevenueValidator : AbstractValidator<GetRevenueRequest>
 {
@@ -24,6 +25,7 @@ public class GetRevenueEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
+        // TODO change to get
         app.MapPost("/analytics/get-revenue", async (ISender sender, GetRevenueRequest getRevenueRequest) =>
         {
             var response = await sender.Send(getRevenueRequest);
