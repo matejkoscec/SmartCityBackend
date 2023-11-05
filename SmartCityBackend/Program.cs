@@ -124,12 +124,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .SetIsOriginAllowed(_ => true)
-    .AllowCredentials());
-
 app.UseHttpsRedirection();
 
 app.UseMiddleware<ValidationMiddleware>();
