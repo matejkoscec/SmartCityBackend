@@ -6,7 +6,8 @@ using SmartCityBackend.Models;
 
 namespace SmartCityBackend.Features.ParkingSpot;
 
-public sealed record ParkingSpotCommand(decimal Latitude, decimal Longitude, ParkingZone ParkingZone) : IRequest<ParkingSpotResponse>;
+public sealed record ParkingSpotCommand
+    (decimal Latitude, decimal Longitude, ParkingZone ParkingZone) : IRequest<ParkingSpotResponse>;
 
 public sealed record ParkingSpotResponse(string Id,
     double? Latitude,
@@ -24,24 +25,23 @@ public sealed class CreateParkingSpotCommandValidator : AbstractValidator<Parkin
         RuleFor(x => x.ParkingZone).NotEmpty().WithMessage("ParkingZone must not be empty");
         RuleFor(x => x.Latitude).NotEmpty().WithMessage("Lat must not be empty").InclusiveBetween(-90, 90);
         RuleFor(x => x.Longitude).NotEmpty().WithMessage("Lng must not be empty").InclusiveBetween(-180, 180);
-
     }
 }
+
 public class CreateParkingSpotEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/parking-spot/create",async (ISender sender, ParkingSpotCommand parkingSpot) =>
-            {
-                var response = await sender.Send(parkingSpot);
-                return Results.Ok(response);
-            });
-        
+        app.MapPost("/parking-spot/create", async (ISender sender, ParkingSpotCommand parkingSpot) =>
+        {
+            var response = await sender.Send(parkingSpot);
+            return Results.Ok(response);
+        });
     }
 }
 
 public class ParkingSpotHandler : IRequestHandler<ParkingSpotCommand, ParkingSpotResponse>
-{   
+{
     private readonly IParkingSimulationService _parkingSimulationService;
 
     public ParkingSpotHandler(IParkingSimulationService parkingSimulationService)
@@ -53,5 +53,4 @@ public class ParkingSpotHandler : IRequestHandler<ParkingSpotCommand, ParkingSpo
     {
         return await _parkingSimulationService.CreateParkingSpot(request, cancellationToken);
     }
-    
 }

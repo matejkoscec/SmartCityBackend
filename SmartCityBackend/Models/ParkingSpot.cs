@@ -1,4 +1,6 @@
-﻿namespace SmartCityBackend.Models;
+﻿using System.Collections;
+
+namespace SmartCityBackend.Models;
 
 public class ParkingSpot : AuditableEntity<Guid>
 {
@@ -8,7 +10,7 @@ public class ParkingSpot : AuditableEntity<Guid>
 
     public ParkingZone Zone { get; set; }
     
-    public IEnumerable<ParkingSpotHistory> ParkingSpotsHistory { get; set; } = null!;
+    public IEnumerable<ParkingSpotHistory> ParkingSpotsHistory { get; set; } = new List<ParkingSpotHistory>();
     
-    public IEnumerable<ActiveReservation> ActiveReservations { get; set; } = null!;
+    public IEnumerable<ActiveReservation> ActiveReservations { get; set; } = new List<ActiveReservation>();
 }

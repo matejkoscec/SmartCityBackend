@@ -3,6 +3,7 @@ using System.Text.Json;
 using Azure.Messaging.EventHubs.Consumer;
 using Microsoft.EntityFrameworkCore;
 using SmartCityBackend.Infrastructure.Persistence;
+using SmartCityBackend.Infrastructure.Utils;
 using SmartCityBackend.Models;
 
 namespace SmartCityBackend.Features.EventHub;
@@ -55,7 +56,7 @@ public class EventHubListener : BackgroundService
 
             var eventJson = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
             var parkingSpotEvent = JsonSerializer.Deserialize<ParkingSpotEvent>(eventJson)!;
-
+            
             var parkingSpot =
                 await _dbContext.ParkingSpots.SingleOrDefaultAsync(x => x.Id == parkingSpotEvent.Id, stoppingToken);
 

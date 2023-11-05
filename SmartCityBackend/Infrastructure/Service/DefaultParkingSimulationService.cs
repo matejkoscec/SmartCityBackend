@@ -65,8 +65,8 @@ public class DefaultParkingSimulationService : IParkingSimulationService
     {
         CreateReservationRequest request = new CreateReservationRequest(
             createReservationCommand.ParkingSpotId.ToString(),
-            createReservationCommand.DurationInHours,
-            createReservationCommand.DurationInMinutes);
+            createReservationCommand.EndHour,
+            createReservationCommand.EndMinute);
         var result = await _httpClient.PostAsync("api/ParkingSpot/reserve",
             SerializeToJsonContent(request),
             cancellationToken);

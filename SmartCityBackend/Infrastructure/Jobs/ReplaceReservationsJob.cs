@@ -45,7 +45,8 @@ public class ReplaceReservationsJob : IJob
                 ReservationHistory reservationHistory = new ReservationHistory();
             
                 reservationHistory.Id = activeReservation.Id;
-                reservationHistory.Start = activeReservation.Start;
+                // TODO fix this
+                reservationHistory.Start = activeReservation?.Start ?? DateTimeOffset.UtcNow;
                 reservationHistory.End = activeReservation.End;
                 reservationHistory.ParkingSpotId = activeReservation.ParkingSpotId;
                 reservationHistory.ParkingSpot = activeReservation.ParkingSpot;

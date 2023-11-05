@@ -2,6 +2,7 @@
 using Quartz;
 using SmartCityBackend.Infrastructure.Persistence;
 using SmartCityBackend.Infrastructure.Service;
+using SmartCityBackend.Infrastructure.Utils;
 using SmartCityBackend.Models;
 
 namespace SmartCityBackend.Infrastructure.Jobs;
@@ -54,6 +55,24 @@ public class GetAllParkingSpotsJob : IJob
             }
             else
             {
+                var parkingSpotStartingHistory = new ParkingSpotHistory()
+                {
+                    IsOccupied = spotDto.Occupied,
+                    ParkingSpotId = guid,
+                    // TODO fix this
+                    StartTime = CurrentSimulationTime.GetCurrentSimulationTime() ?? DateTimeOffset.Now.ToUniversalTime(),
+                    ActiveReservationId = null,
+                    ReservationHistoryId = null,
+                    ZonePriceId = spotDto.ParkingZone switch
+                    {
+                        ParkingZone.Zone1 => 1,
+                        ParkingZone.Zone2 => 2,
+                        ParkingZone.Zone3 => 3,
+                        ParkingZone.Zone4 => 4,
+                        _ => 1
+                    }
+                };
+                
                 var newSpot = new ParkingSpot
                 {
                     Id = guid,
@@ -61,6 +80,8 @@ public class GetAllParkingSpotsJob : IJob
                     Lng = spotDto.Longitude,
                     Zone = spotDto.ParkingZone
                 };
+                
+                _dbContext.ParkingSpotsHistory.Add(parkingSpotStartingHistory);
                 _dbContext.Add(newSpot);
                 _logger.LogInformation("Added new parking spot {Guid}", newSpot.Id);
                 updated++;

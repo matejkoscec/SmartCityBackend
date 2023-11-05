@@ -18,7 +18,7 @@ public class AddReservationsAndParkingSpotAndZonePrice : Migration {
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
             .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("user_id").AsInt64().NotNullable().ForeignKey("FK_active_reservation_user_id", "users", "id")
-            .WithColumn("start").AsDateTimeOffset().NotNullable()
+            .WithColumn("start").AsDateTimeOffset().Nullable()
             .WithColumn("end").AsDateTimeOffset().NotNullable()
             .WithColumn("parking_spot_id").AsGuid().NotNullable().ForeignKey("FK_active_reservation_parking_spot_id", "parking_spot", "id");
 
@@ -26,7 +26,7 @@ public class AddReservationsAndParkingSpotAndZonePrice : Migration {
             .WithColumn("id").AsInt64().PrimaryKey().Identity()
             .WithColumn("created_at_utc").AsDateTimeOffset().NotNullable()
             .WithColumn("user_id").AsInt64().NotNullable().ForeignKey("FK_reservation_history_user_id", "users", "id")
-            .WithColumn("start").AsDateTimeOffset().NotNullable()
+            .WithColumn("start").AsDateTimeOffset().Nullable()
             .WithColumn("end").AsDateTimeOffset().NotNullable()
             .WithColumn("parking_spot_id").AsGuid().NotNullable().ForeignKey("FK_reservation_history_parking_spot_id", "parking_spot", "id");
         

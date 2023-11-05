@@ -7,7 +7,6 @@ namespace SmartCityBackend.Features.ParkingSpot;
 
 public record DeleteParkingSpotCommand(Guid Id, string Response) : IRequest<string>;
 
-
 public class DeleteParkingSpotEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
@@ -17,13 +16,11 @@ public class DeleteParkingSpotEndpoint : ICarterModule
             string response = await sender.Send(new DeleteParkingSpotCommand(guidId, null));
             return Results.Ok(response);
         });
-
-        
     }
 }
 
 public class DeleteParkingSpotHandler : IRequestHandler<DeleteParkingSpotCommand, string>
-{   
+{
     private readonly IParkingSimulationService _parkingSimulationService;
 
     public DeleteParkingSpotHandler(IParkingSimulationService parkingSimulationService)
