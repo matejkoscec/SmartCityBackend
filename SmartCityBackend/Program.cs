@@ -8,7 +8,9 @@ using Quartz;
 using SmartCityBackend.Features.Reservation;
 using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
+using SmartCityBackend.Infrastructure.Hash;
 using SmartCityBackend.Infrastructure.Jobs;
+using SmartCityBackend.Infrastructure.JwtProvider;
 using SmartCityBackend.Infrastructure.Middlewares;
 using SmartCityBackend.Infrastructure.Persistence;
 using SmartCityBackend.Infrastructure.PipelineBehavior;
@@ -75,6 +77,9 @@ builder.Services.AddQuartz(q =>
     );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 var app = builder.Build();
 
