@@ -11,9 +11,7 @@ namespace SmartCityBackend.Features.Analytics;
 public record GetZoneOccupancyRequest
     (DateTimeOffset Start, DateTimeOffset End) : IRequest<GetZoneOccupancyResponse>;
 
-public record GetZoneOccupancyResponse(List<ZoneOccupancy> ZoneOccupancy, List<DateTimeOffset> Hours);
-
-public record ZoneOccupancy(List<decimal> ZoneOccupancies);
+public record GetZoneOccupancyResponse(List<Dictionary<ParkingZone, decimal>> ZoneOccupancies);
 
 public sealed class GetZoneOccupancyValidator : AbstractValidator<GetZoneOccupancyRequest>
 {
@@ -48,22 +46,20 @@ public class GetZoneOccupancyHandler : IRequestHandler<GetZoneOccupancyRequest, 
     public async Task<GetZoneOccupancyResponse> Handle(GetZoneOccupancyRequest request,
         CancellationToken cancellationToken)
     {
-        var fullHours = FullHoursBetween(request.Start, request.End); 
-        var zoneOccupancy = new List<ZoneOccupancy>();
+        var fullHours = FullHoursBetween(request.Start, request.End);
+        var zoneOccupancies = new List<Dictionary<ParkingZone, decimal>>();
 
         foreach (var hour in fullHours)
         {
-            var zoneOccupancyList = new List<decimal>();
+            var zoneOccupancyDict = new Dictionary<ParkingZone, decimal>();
             foreach (ParkingZone zone in Enum.GetValues(typeof(ParkingZone)))
             {
                 var zoneOccupancyPercentage = await GetZoneOccupancy(zone, hour, hour.AddHours(1));
-                zoneOccupancyList.Add(zoneOccupancyPercentage);
+                zoneOccupancyDict.Add(zone, zoneOccupancyPercentage);
             }
-
-            zoneOccupancy.Add(new ZoneOccupancy(zoneOccupancyList));
+            zoneOccupancies.Add(zoneOccupancyDict);
         }
-        
-        return new GetZoneOccupancyResponse(zoneOccupancy, fullHours);
+        return new GetZoneOccupancyResponse(zoneOccupancies);
     }
 
     private async Task<decimal> GetZoneOccupancy(ParkingZone zone, DateTimeOffset start, DateTimeOffset end)
