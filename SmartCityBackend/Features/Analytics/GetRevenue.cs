@@ -10,7 +10,7 @@ namespace SmartCityBackend.Features.Analytics;
 public record GetRevenueRequest
     (DateTimeOffset Start, DateTimeOffset End, Guid ParkingSpotId) : IRequest<GetRevenueResponse>;
 
-public record GetRevenueResponse(double Revenue);
+public record GetRevenueResponse(decimal Revenue);
 
 // TODO revenue per periods (for example per hour) so it can be easily displayed on a graph
 

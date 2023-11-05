@@ -4,16 +4,16 @@ namespace SmartCityBackend.Features.Analytics.Util;
 
 public class AnalyticsUtil
 {
-    public static double GetRevenueForParkingSpot(DateTimeOffset start, DateTimeOffset end,
+    public static decimal GetRevenueForParkingSpot(DateTimeOffset start, DateTimeOffset end,
         List<ParkingSpotHistory> parkingSpotHistories)
     {
-        var totalMinutes = (decimal) GetOccupiedMinutes(start, end, parkingSpotHistories);
+        var totalMinutes = GetOccupiedMinutes(start, end, parkingSpotHistories);
         var zonePrice = parkingSpotHistories.First().ZonePrice.Price;
         
-        return (double) (totalMinutes * zonePrice / 60);
+        return (totalMinutes * zonePrice / 60);
     }
     
-    public static double GetOccupiedPercentage(DateTimeOffset start, DateTimeOffset end,
+    public static decimal GetOccupiedPercentage(DateTimeOffset start, DateTimeOffset end,
         List<ParkingSpotHistory> parkingSpotHistories)
     {
         var occupiedRecords = parkingSpotHistories
@@ -50,14 +50,14 @@ public class AnalyticsUtil
         
         var occupiedPercentage = totalOccupiedTime / totalOccupiedTimeSpanMinutes;
         
-        return occupiedPercentage;
+        return (decimal) occupiedPercentage;
     }
 
-    public static double GetOccupiedMinutes(DateTimeOffset start, DateTimeOffset end,
+    public static decimal GetOccupiedMinutes(DateTimeOffset start, DateTimeOffset end,
         List<ParkingSpotHistory> parkingSpotHistories)
     {
         var percentage = GetOccupiedPercentage(start, end, parkingSpotHistories);
-        var totalMinutes = (end - start).TotalMinutes;
+        var totalMinutes = (decimal) (end - start).TotalMinutes;
         var occupiedMinutes = percentage * totalMinutes;
         return occupiedMinutes;
     }

@@ -10,7 +10,9 @@ namespace SmartCityBackend.Features.Analytics;
 public record GetPopularRequest
     (DateTimeOffset Start, DateTimeOffset End, int NoOfParkingSpots) : IRequest<GetPopularResponse>;
 
-public record GetPopularResponse(Dictionary<Guid, double> ParkingSpotsOccupation);
+public record GetPopularResponse(List<ParkingSpotOccupation> ParkingSpotsOccupation);
+
+public record ParkingSpotOccupation(Guid Guid, decimal Longitude, decimal Latitude, decimal OccupationPercentage);
 
 public sealed class GetPopularValidator : AbstractValidator<GetPopularRequest>
 {
@@ -47,18 +49,19 @@ public class GetPopularHandler : IRequestHandler<GetPopularRequest, GetPopularRe
         var parkingSpots =
             await _dbContext.ParkingSpots.Include(x => x.ParkingSpotsHistory).ToListAsync(cancellationToken);
         
-        var spotOccupationDictionary = new Dictionary<Guid, double>();
+        var spotOccupationDictionary = new Dictionary<Guid, ParkingSpotOccupation>();
         foreach (var parkingSpot in parkingSpots)
         {
             var relevantParkingSpotsHistory = parkingSpot.ParkingSpotsHistory
                 .Where(x => x.StartTime >= request.Start).ToList();
             var occupiedPercentage = AnalyticsUtil.GetOccupiedPercentage(request.Start, request.End,
                 relevantParkingSpotsHistory);
-            spotOccupationDictionary.Add(parkingSpot.Id, occupiedPercentage);
+            spotOccupationDictionary.Add(parkingSpot.Id, new ParkingSpotOccupation(parkingSpot.Id, parkingSpot.Lng,
+                parkingSpot.Lat, occupiedPercentage));
         }
         
-        var sortedDictionary = spotOccupationDictionary.OrderByDescending(x => x.Value).Take(request.NoOfParkingSpots)
-            .ToDictionary(x => x.Key, x => x.Value);
+        var sortedDictionary = spotOccupationDictionary.OrderByDescending(x => x.Value.OccupationPercentage).Take(request.NoOfParkingSpots)
+            .Select(x => x.Value).ToList();
         
         return new GetPopularResponse(sortedDictionary);
     }
