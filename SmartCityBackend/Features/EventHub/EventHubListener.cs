@@ -28,17 +28,17 @@ public class EventHubListener : BackgroundService
 
     public EventHubListener(IConfiguration configuration,
         IServiceScopeFactory iServiceScopeFactory,
-        ILogger<EventHubListener> logger,
-        IHubContext<ParkingSpotFeedHub, ILocationClient> hubContext)
+        ILogger<EventHubListener> logger)
     {
         _logger = logger;
-        _hubContext = hubContext;
         var eventHubConnectionString = configuration.GetSection("EventHub:ConnectionString").Value!;
         var eventHubName = configuration.GetSection("EventHub.Name").Value!;
         _consumerClient = new EventHubConsumerClient(EventHubConsumerClient.DefaultConsumerGroupName,
             eventHubConnectionString,
             eventHubName);
         _dbContext = iServiceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
+        _hubContext = iServiceScopeFactory.CreateScope()
+            .ServiceProvider.GetRequiredService<IHubContext<ParkingSpotFeedHub, ILocationClient>>();
         _partitionId = "0";
     }
 
@@ -62,7 +62,7 @@ public class EventHubListener : BackgroundService
 
             var eventJson = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
             var parkingSpotEvent = JsonSerializer.Deserialize<ParkingSpotEvent>(eventJson)!;
-            
+
             var parkingSpot =
                 await _dbContext.ParkingSpots.SingleOrDefaultAsync(x => x.Id == parkingSpotEvent.Id, stoppingToken);
 
@@ -78,13 +78,14 @@ public class EventHubListener : BackgroundService
 
             var time = DateTimeOffset.Parse(parkingSpotEvent.Time).ToUniversalTime();
             var activeReservation =
-                await _dbContext.ActiveReservations.SingleOrDefaultAsync(x => x.ParkingSpotId == parkingSpotEvent.Id, stoppingToken);
+                await _dbContext.ActiveReservations.SingleOrDefaultAsync(x => x.ParkingSpotId == parkingSpotEvent.Id,
+                    stoppingToken);
 
             var parkingSpotHistory = new ParkingSpotHistory
             {
                 IsOccupied = parkingSpotEvent.IsOccupied,
                 StartTime = time,
-                ParkingSpotId = parkingSpot!.Id,
+                ParkingSpotId = parkingSpot.Id,
                 ParkingSpot = parkingSpot,
                 ActiveReservationId = activeReservation?.Id ?? null,
                 ActiveReservation = activeReservation,
@@ -94,13 +95,18 @@ public class EventHubListener : BackgroundService
 
             _dbContext.ParkingSpotsHistory.Add(parkingSpotHistory);
 
-            var message = JsonSerializer.Serialize(parkingSpotHistory, Json.DefaultSerializerOptions);
+            var message = JsonSerializer.Serialize(new
+            {
+                ParkingSpotId = parkingSpot.Id,
+                IsOccupied = parkingSpotEvent.IsOccupied,
+                Price = zonePrice.Price,
+            }, Json.DefaultSerializerOptions);
             _hubContext.Clients.All.ReceiveMessage(message);
 
             await _dbContext.SaveChangesAsync(stoppingToken);
         }
     }
-    
+
     private async Task<EventHubInfo> GetEventHubInfo(CancellationToken cancellationToken)
     {
         var offset = await _dbContext.EventHubInfo.FirstOrDefaultAsync(cancellationToken);

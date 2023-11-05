@@ -7,14 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using Quartz;
 using SmartCityBackend.Features.EventHub;
 using SmartCityBackend.Infrastructure;
-using SmartCityBackend.Infrastructure.Hubs;
 using SmartCityBackend.Infrastructure.Hash;
+using SmartCityBackend.Infrastructure.Hubs;
 using SmartCityBackend.Infrastructure.Jobs;
 using SmartCityBackend.Infrastructure.JwtProvider;
 using SmartCityBackend.Infrastructure.Middlewares;
 using SmartCityBackend.Infrastructure.Persistence;
 using SmartCityBackend.Infrastructure.PipelineBehavior;
-using SmartCityBackend.Infrastructure.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +43,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 });
 
 builder.Services.AddHttpClients(builder.Configuration);
+
+builder.Services.AddSignalR();
 
 builder.Services.AddHostedService<EventHubListener>();
 
