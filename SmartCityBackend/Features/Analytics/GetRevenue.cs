@@ -51,44 +51,7 @@ public class GetRevenueHandler : IRequestHandler<GetRevenueRequest, GetRevenueRe
             .OrderBy(x => x.StartTime)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
-
-        // IList<ParkingSpotHistory> parkingSpotHistoriesFiltered = new List<ParkingSpotHistory>();
-        //
-        // if (request.Start != null)
-        //     parkingSpotHistoriesFiltered = parkingSpotHistoriesFiltered.Where(x => x.StartTime >= request.Start).ToList();
-        //
-        //
-        // if (request.End != null)
-        //     parkingSpotHistoriesFiltered = parkingSpotHistoriesFiltered.Where(x => x.StartTime <= request.End).ToList();
-        //
-        //
-        // if(request.Start == null && request.End == null)
-        //     parkingSpotHistoriesFiltered = parkingSpotHistories.ToList();
-        //
-        // if(parkingSpotHistoriesFiltered.Count == 0)
-        //     return new GetRevenueResponse(0);
-        //
-        // decimal totalRevenue = 0;
-        // decimal totalDuration = 0;
-        //
-        // for (int i = 0; i < parkingSpotHistoriesFiltered.Count - 1; i += 2)
-        // {
-        //     ParkingSpotHistory firstHistory = parkingSpotHistoriesFiltered[i];
-        //     ParkingSpotHistory secondHistory = parkingSpotHistoriesFiltered[i + 1];
-        //     
-        //     
-        //     DateTimeOffset reservationStart = firstHistory.StartTime;
-        //     DateTimeOffset reservationEnd = secondHistory.StartTime;
-        //     
-        //     
-        //     decimal price = firstHistory.ZonePrice.Price;
-        //     
-        //     decimal reservationDuration = (decimal) (reservationEnd - reservationStart).TotalHours;
-        //     
-        //     totalDuration += reservationDuration;
-        //     totalRevenue += price * reservationDuration;
-        // }
-
+        
         var totalRevenue = AnalyticsUtil.GetRevenueForParkingSpot(request.Start, request.End, parkingSpotHistories);
 
         return new GetRevenueResponse(totalRevenue);

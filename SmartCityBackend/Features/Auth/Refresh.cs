@@ -42,29 +42,22 @@ public sealed class RefreshCommandHandler : IRequestHandler<RefreshCommand, Refr
         var refreshToken = command.Context.Request.Cookies["refreshToken"];
 
         if (refreshToken == null)
-        {
             throw new("Refresh token is missing");
-        }
 
         var refresh = _databaseContext.RefreshTokens.Include(x => x.User).FirstOrDefault(x => x.Token == refreshToken);
         if (refresh == null)
-        {
             throw new("Refresh token is invalid");
-        }
+        
         
         // if token expired
         if (refresh.Expires < DateTimeOffset.UtcNow)
-        {
             // return unathorized
             throw new("Refresh token is expired");
-        }
-        
+
         User? user = _databaseContext.Users.FirstOrDefault(x => x.Id == refresh.UserId);
         
         if (user == null)
-        {
             throw new("User not found");
-        }
         await _databaseContext.SaveChangesAsync(cancellationToken);
 
         var token = _jwtProvider.GenerateToken(user);

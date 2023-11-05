@@ -39,11 +39,13 @@ public class CreateReservationHandler : IRequestHandler<CreateReservationCommand
 {
     private readonly IParkingSimulationService _parkingSimulationService;
     private readonly DatabaseContext _databaseContext;
+    private readonly IUserContextService _userContextService;
 
-    public CreateReservationHandler(IParkingSimulationService parkingSimulationService, DatabaseContext databaseContext)
+    public CreateReservationHandler(IParkingSimulationService parkingSimulationService, DatabaseContext databaseContext, IUserContextService userContextService)
     {
         _parkingSimulationService = parkingSimulationService;
         _databaseContext = databaseContext;
+        _userContextService = userContextService;
     }
 
     public async Task<string> Handle(CreateReservationCommand request, CancellationToken cancellationToken)
@@ -63,7 +65,7 @@ public class CreateReservationHandler : IRequestHandler<CreateReservationCommand
         {
             ParkingSpotId = request.ParkingSpotId,
             End = DateTimeOffset.Parse(endTime).ToUniversalTime(),
-            UserId = 1L
+            UserId = _userContextService.GetUserDetails().Id
         };
 
         var response = await _parkingSimulationService.CreateReservation(request, cancellationToken);

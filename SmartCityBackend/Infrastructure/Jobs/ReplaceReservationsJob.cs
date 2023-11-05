@@ -52,6 +52,7 @@ public class ReplaceReservationsJob : IJob
                 reservationHistory.ParkingSpot = activeReservation.ParkingSpot;
                 reservationHistory.UserId = activeReservation.UserId;
                 reservationHistory.ParkingSpotsHistory = activeReservation.ParkingSpotsHistory;
+                reservationHistory.User = activeReservation.User;
                 
                 _dbContext.ReservationHistory.Add(reservationHistory);
             }

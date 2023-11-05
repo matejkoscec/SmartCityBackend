@@ -12,7 +12,7 @@ public class ZonePriceEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/zone-price", async (ISender sender) =>
+        app.MapGet("/api/zone-price", async (ISender sender) =>
         {
             var response = await sender.Send(new ZonePriceCommand());
             return Results.Ok(response);

@@ -9,10 +9,10 @@ public class AnalyticsUtil
     {
         var totalMinutes = GetOccupiedMinutes(start, end, parkingSpotHistories);
         var zonePrice = parkingSpotHistories.First().ZonePrice.Price;
-        
+
         return (totalMinutes * zonePrice / 60);
     }
-    
+
     public static decimal GetOccupiedPercentage(DateTimeOffset start, DateTimeOffset end,
         List<ParkingSpotHistory> parkingSpotHistories)
     {
@@ -20,11 +20,12 @@ public class AnalyticsUtil
             .Where(history => history.IsOccupied)
             .OrderBy(history => history.StartTime)
             .ToList();
-        
+
         var unoccupiedRecords = parkingSpotHistories
             .Where(history => !history.IsOccupied)
             .OrderBy(history => history.StartTime)
             .ToList();
+
         
         if (occupiedRecords.Count == 0 || unoccupiedRecords.Count == 0)
         {
@@ -40,8 +41,9 @@ public class AnalyticsUtil
             return 0;   
         }
         
+
         var totalOccupiedTime = 0.0;
-       
+
         foreach (var unoccupiedRecord in unoccupiedRecordsAfterFirstOccupied)
         {
             var occupiedRecord = occupiedRecords
@@ -49,25 +51,25 @@ public class AnalyticsUtil
 
             if (occupiedRecord == null)
                 break;
-            
+
             var timeDifference = occupiedRecord.StartTime - unoccupiedRecord.StartTime;
-            
+
             totalOccupiedTime += timeDifference.TotalMinutes;
         }
-        
+
         var totalOccupiedTimeSpan = end - start;
         var totalOccupiedTimeSpanMinutes = totalOccupiedTimeSpan.TotalMinutes;
-        
+
         var occupiedPercentage = totalOccupiedTime / totalOccupiedTimeSpanMinutes;
-        
-        return (decimal) occupiedPercentage;
+
+        return (decimal)occupiedPercentage;
     }
 
     public static decimal GetOccupiedMinutes(DateTimeOffset start, DateTimeOffset end,
         List<ParkingSpotHistory> parkingSpotHistories)
     {
         var percentage = GetOccupiedPercentage(start, end, parkingSpotHistories);
-        var totalMinutes = (decimal) (end - start).TotalMinutes;
+        var totalMinutes = (decimal)(end - start).TotalMinutes;
         var occupiedMinutes = percentage * totalMinutes;
         return occupiedMinutes;
     }

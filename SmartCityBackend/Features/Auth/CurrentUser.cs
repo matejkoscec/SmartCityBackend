@@ -46,13 +46,10 @@ public class CurrentUserHandler : IRequestHandler<CurrentUserCommand, CurrentUse
             .SingleOrDefaultAsync(x => x.Id == userContext.Id, cancellationToken);
 
         foreach (var role in user.Roles)
-        {
             role.Users = null!;
-        }
+        
         if (user == null)
-        {
             throw new("User not found");
-        }
 
         return new CurrentUserResponse(user);
     }

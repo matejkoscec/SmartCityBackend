@@ -48,7 +48,7 @@ public class GetPopularHandler : IRequestHandler<GetPopularRequest, GetPopularRe
     {
         var parkingSpots =
             await _dbContext.ParkingSpots.Include(x => x.ParkingSpotsHistory).ToListAsync(cancellationToken);
-        
+
         var spotOccupationDictionary = new Dictionary<Guid, ParkingSpotOccupation>();
         foreach (var parkingSpot in parkingSpots)
         {
@@ -59,10 +59,11 @@ public class GetPopularHandler : IRequestHandler<GetPopularRequest, GetPopularRe
             spotOccupationDictionary.Add(parkingSpot.Id, new ParkingSpotOccupation(parkingSpot.Id, parkingSpot.Lng,
                 parkingSpot.Lat, occupiedPercentage));
         }
-        
-        var sortedDictionary = spotOccupationDictionary.OrderByDescending(x => x.Value.OccupationPercentage).Take(request.NoOfParkingSpots)
+
+        var sortedDictionary = spotOccupationDictionary.OrderByDescending(x => x.Value.OccupationPercentage)
+            .Take(request.NoOfParkingSpots)
             .Select(x => x.Value).ToList();
-        
+
         return new GetPopularResponse(sortedDictionary);
     }
 }
